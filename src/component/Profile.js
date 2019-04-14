@@ -4,14 +4,14 @@ import {connect} from 'react-redux'
 import { Redirect } from 'react-router-dom'
 
 import axios from '../config/axios'
-import { onLogout } from './../actions'
+import { onLogout, onEditAccount } from './../actions'
 
 class Profile extends Component {
     constructor(props) {
         super(props);
-        this.i = Math.floor(Math.random() * 1000000000000000000000)
         this.state = {
-            index: this.i
+            index: Math.floor(Math.random() * 1000000000000000000000),
+            flag: true
         }
     }
     
@@ -60,6 +60,60 @@ class Profile extends Component {
       }
     }
 
+    editAccount = () => {
+      this.setState({flag: false})
+    }
+
+    cancelEdit = () => {
+      this.setState({flag: true})
+    }
+
+    submitEditAccount = () => {
+      const id = this.props.id
+      const name = this.name.value
+      const age = parseInt(this.age.value)
+
+            // console.log(id, name, age)
+      this.props.onEditAccount(id, name, age)
+      this.cancelEdit()
+    }
+
+    profilDisplay = () => {
+      if(this.state.flag) {
+        return (
+          <div>
+            <div className="my-3">
+              <h2 className="display-4">{this.props.name}</h2>
+            </div>
+            <div className="my-1">
+              <h2>{this.props.age}</h2>
+            </div>
+            <Button onClick={() => this.editAccount()} style={{display: "inline"}} color="secondary">
+                Edit Account
+              </Button>
+              <Button onClick={() => this.deleteAccount()} className="btn btn-outline-warning my-5 mx-5">
+                  Delete Account
+              </Button>
+          </div>
+        );
+      }else {
+        return (
+          <div>
+              <form className="form-group my-3">
+                  <input type="text" className="form-control" defaultValue={this.props.name} ref={input => this.name = input}/>
+                  <input type="number" className="form-control" defaultValue={this.props.age} ref={input => this.age = input}/>
+              </form>
+              <Button onClick={() => this.submitEditAccount()} style={{display: "inline"}} color="secondary">
+                Submit
+              </Button>
+              <Button onClick={() => this.cancelEdit()} className="btn btn-outline-danger my-5 mx-5">
+                  Cancel
+              </Button>
+          </div>
+        )
+      }
+    }
+
     render() {
         if(this.props.name) {
           return (
@@ -86,12 +140,7 @@ class Profile extends Component {
                   Delete
                 </Button>
               </div>
-              <div className="my-3">
-                <h2 className="display-4">{this.props.name}</h2>
-              </div>
-              <Button onClick={() => this.deleteAccount()} style={{display: "inline"}} className="btn btn-outline-warning my-5">
-                  Delete Account
-              </Button>
+              {this.profilDisplay()}
             </div>
           );
         }else {
@@ -103,8 +152,9 @@ class Profile extends Component {
 const mps = state => {
     return {
       id: state.auth.id,
-      name: state.auth.name
+      name: state.auth.name,
+      age: state.auth.age
     }
 }
 
-export default connect(mps, { onLogout })(Profile)
+export default connect(mps, { onLogout, onEditAccount })(Profile)

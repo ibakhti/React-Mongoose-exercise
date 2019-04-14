@@ -20,7 +20,7 @@ export const onLogin = (email, password) => {
     return async dispatch => {
         try {
             const res = await axios.post('/users/login', {email, password})
-            console.log(res);
+            // console.log(res);
             
             cookie.set('masihLogin', res.data.name, {path:'/'})
             cookie.set('idLogin', res.data._id, {path:'/'})
@@ -28,7 +28,7 @@ export const onLogin = (email, password) => {
             dispatch({
                 type: 'LOGIN_SUCCESS',
                 payload: {
-                    id: res.data._id , name: res.data.name
+                    id: res.data._id , name: res.data.name, age: res.data.age
                 }
             })
             
@@ -49,7 +49,8 @@ export const keepLogin = _id => {
                 type: 'LOGIN_SUCCESS',
                 payload: {
                     id: res.data._id,
-                    name: res.data.name
+                    name: res.data.name,
+                    age: res.data.age
                 }
             })
         } catch (e) {
@@ -66,4 +67,23 @@ export const onLogout = () => {
         type: 'LOGOUT_SUCCESS'
     }
 
+}
+
+export const onEditAccount = (id, name, age) => {
+    return async (dispatch) => {
+        try {
+            const res = await axios.put('/users/update', {
+                id, name, age
+            })
+
+            dispatch({
+                type: 'LOGIN_SUCCESS',
+                payload: {
+                    id: res.data._id , name: res.data.name, age: res.data.age
+                }
+            })
+        } catch (error) {
+            console.log('error from action onEditAccount ' + error)
+        }
+    }
 }
