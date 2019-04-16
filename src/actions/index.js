@@ -20,17 +20,27 @@ export const onLogin = (email, password) => {
     return async dispatch => {
         try {
             const res = await axios.post('/users/login', {email, password})
-            // console.log(res);
+            console.log(res.data);
             
-            cookie.set('masihLogin', res.data.name, {path:'/'})
-            cookie.set('idLogin', res.data._id, {path:'/'})
+            if (res.data.name !== undefined){
+                // console.log('if oke')
+                cookie.set("masihLogin", res.data.name, {
+                  path: "/"
+                });
+                cookie.set("idLogin", res.data._id, {
+                  path: "/"
+                });
 
-            dispatch({
-                type: 'LOGIN_SUCCESS',
-                payload: {
-                    id: res.data._id , name: res.data.name, age: res.data.age
-                }
-            })
+                dispatch({
+                  type: "LOGIN_SUCCESS",
+                  payload: {
+                    id: res.data._id,
+                    name: res.data.name,
+                    age: res.data.age
+                  }
+                });
+            }
+            // console.log('if no');
             
         } catch (e) {
             console.log(e);
